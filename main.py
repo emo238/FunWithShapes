@@ -1,1 +1,3 @@
-print("Hello world!")
+import tools
+
+tools.build_triangle(True)
