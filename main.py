@@ -1,4 +1,5 @@
 import tools
+import numpy as np
 
 #%% Testing with a simple triangle
 
@@ -14,4 +15,15 @@ import tools
 
 #%% Trying to use the whole frame 
 
-points = tools.generates_random_points(3, True)
+points = tools.generates_random_points(10)
+
+triangles = tools.generates_triangles_from_points(points, True)
+
+shapes = []
+
+for triangle in triangles :
+    shapes.append(tools.build_shapes_in_shape(triangle, 30))
+    
+tools.draw_picture(shapes, True)
+    
+    

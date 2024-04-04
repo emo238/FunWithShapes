@@ -1,8 +1,12 @@
-from scipy.spatial import ConvexHull
+from scipy.spatial import Delaunay
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools
+import imageio
+import shutil
 import random
 import math
+import os
 
 def draw_shape(shape):
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
@@ -23,6 +27,55 @@ def draw_shapes(shapes):
         ax.plot(shape[[-1,0],0], shape[[-1,0],1], 'b-')
         ax.plot(shape[:,0], shape[:, 1], 'b-')
 
+    ax.set_ylim(bottom=0, top=1)
+    ax.set_xlim(left=0, right=1)
+    ax.set_title("This is a shape")
+    plt.show()
+    return 0
+
+def clear_directory(directory):
+    # List all files in the directory
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # Remove each file
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Remove each directory
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
+
+def create_gif(image_folder, gif_name, duration=0.5):
+    images = []
+    # Get the list of image files
+    file_names = sorted(os.listdir(image_folder), key=lambda x: int(x.split('_')[-1].split('.')[0]))
+
+    # Load the images in forward order
+    for filename in file_names:
+        images.append(imageio.imread(os.path.join(image_folder, filename)))
+
+    # Append the images in reverse order (except the first and the last)
+    images.extend(reversed(images[1:-1]))
+
+    # Save the gif
+    imageio.mimsave(gif_name, images, duration=duration)
+
+def draw_picture(list_shapes, gif = False):
+    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+    n = len(list_shapes[0])
+    for i in range(n):
+        for shapes in list_shapes:
+                ax.plot(shapes[i][[-1,0],0], shapes[i][[-1,0],1], 'b-')
+                ax.plot(shapes[i][:,0], shapes[i][:, 1], 'b-')
+        if gif:
+            ax.set_ylim(bottom=0, top=1)
+            ax.set_xlim(left=0, right=1)
+            ax.set_title("This is a shape")
+            plt.savefig(f'img/shape_snapshot_{i}.png')
+    if gif: 
+        create_gif("img", "gifs/warzazat.gif", 0.1)
+        clear_directory("img")
+    
     ax.set_ylim(bottom=0, top=1)
     ax.set_xlim(left=0, right=1)
     ax.set_title("This is a shape")
@@ -90,7 +143,7 @@ def build_random_shape(n_points, show=False):
 
     return hull_points
 
-def build_shapes_in_shape(shape, n, percentage = -0.1):
+def build_shapes_in_shape(shape, n, percentage = -0.1, show = False):
     if percentage > 0: 
         percentage = percentage * (-1)
     shapes = [shape]
@@ -110,7 +163,9 @@ def build_shapes_in_shape(shape, n, percentage = -0.1):
 
         new_shape = np.array(new_shape)
         shapes.append(new_shape)
-    draw_shapes(shapes)
+    if show:
+        draw_shapes(shapes)
+    return shapes
     
 def plot_points(points):
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
@@ -132,9 +187,9 @@ def generates_random_points(n, show = False):
     points.append(np.array([1,0]))
     points.append(np.array([1,1]))
     
-    additional_side_points = math.floor(np.sqrt(n))
+    additional_side_points = math.floor(np.sqrt(n))-1
     step = 1/(additional_side_points+1)
-    print(step)
+    
     for i in range(additional_side_points):
         points.append(np.array([0,(i+1)*step]))
         points.append(np.array([1,(i+1)*step]))
@@ -145,8 +200,19 @@ def generates_random_points(n, show = False):
     points = np.array(points)
     if show:
         plot_points(points)
-        
     return points
+
+def generates_triangles_from_points(points, show = False):
+    triangulation = Delaunay(points)
+
+    triangles = points[triangulation.simplices]
+    
+    if show:
+        draw_shapes(triangles)
+        
+    return triangles
+
+
     
     
     

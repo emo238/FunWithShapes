@@ -6,3 +6,5 @@ I was able to do simple function to do what I want with one triangle
 
 Day2
 Goal of the day is to do same as yesterday but with a random shape
+Goal was achieved and started to try to fill up a whole 1x1 square, got something nice for triangles but apparently it's a too comple problem to do other shapes than triangle, quadrilatere and hexagons. 
+I need to clean all the code.
