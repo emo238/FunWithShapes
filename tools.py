@@ -2,6 +2,7 @@ from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import math
 
 def draw_shape(shape):
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
@@ -89,8 +90,9 @@ def build_random_shape(n_points, show=False):
 
     return hull_points
 
-def build_shapes_in_shape(shape, n):
-    percentage=-0.1
+def build_shapes_in_shape(shape, n, percentage = -0.1):
+    if percentage > 0: 
+        percentage = percentage * (-1)
     shapes = [shape]
     number_of_points = len(shape)
 
@@ -110,13 +112,41 @@ def build_shapes_in_shape(shape, n):
         shapes.append(new_shape)
     draw_shapes(shapes)
     
+def plot_points(points):
+    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+
+    ax.plot(points[[-1,0],0], points[[-1,0],1], 'b-')
+    ax.plot(points[:,0], points[:, 1], 'b-')
+
+    ax.set_ylim(bottom=0, top=1)
+    ax.set_xlim(left=0, right=1)
+    ax.set_title("This is a shape")
+    plt.show()
+    return 0
+
+def generates_random_points(n, show = False):
+    points = [np.array([random.random(), random.random()]) for _ in range(n)]
+    
+    points.append(np.array([0,0]))
+    points.append(np.array([0,1]))
+    points.append(np.array([1,0]))
+    points.append(np.array([1,1]))
+    
+    additional_side_points = math.floor(np.sqrt(n))
+    step = 1/(additional_side_points+1)
+    print(step)
+    for i in range(additional_side_points):
+        points.append(np.array([0,(i+1)*step]))
+        points.append(np.array([1,(i+1)*step]))
+        points.append(np.array([(i+1)*step,0]))
+        points.append(np.array([(i+1)*step,1]))
     
     
-    
-    
-    
-    
-    
+    points = np.array(points)
+    if show:
+        plot_points(points)
+        
+    return points
     
     
     
